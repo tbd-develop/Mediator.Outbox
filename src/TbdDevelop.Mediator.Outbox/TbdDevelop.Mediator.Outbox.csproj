@@ -9,6 +9,8 @@
         <Title>Mediator Outbox</Title>
         <Authors>Terry Burns-Dyson</Authors>
         <Description>Provides the basic interfaces for interaction with an outbox for INotification from Mediator. </Description>
+        <PackageProjectUrl>https://github.com/tbd-develop/mediator.outbox</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/tbd-develop/mediator.outbox</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
