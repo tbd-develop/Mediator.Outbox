@@ -1,0 +1,25 @@
+name: "Release to Nuget"
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1
+    - name: Build
+      run: dotnet build -c Release
+    - name: Test
+      run: dotnet test -c Release --no-build 
+    - name: Pack Outbox
+      run: dotnet pack ./src/TbdDevelop.Mediator.Outbox / -c Release -p:PackageVersion=${{ github.event.release.tag_name }} --no-build --output .
+    - name: Pack SqlServer
+      run: dotnet pack ./src/TbdDevelop.Mediator.Outbox.SqlServer / -c Release -p:PackageVersion=${{ github.event.release.tag_name }} --no-build --output .
+    - name: Push To Nuget
+      run: dotnet nuget push "*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
