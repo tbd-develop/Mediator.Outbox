@@ -46,6 +46,32 @@ ServiceCollection.AddMediatorOutbox(configure =>
     );
 ```
 
+
+#### Processing Configuration
+
+When using the background processing, you can configure process timeouts and whether exceptions should retry.
+
+```csharp
+ServiceCollection.AddMediatorOutbox(configure => 
+    configure
+        .UseSqlServerOutbox("connection string")
+        .WithBackgroundProcessing(x => 
+            x.WithSettings(s => {
+                s.Interval = TimeSpan.FromSeconds(5)
+                s.BackOffOnException = TimeSpan.FromSeconds(5);
+                s.MaximumBackOff = TimeSpan.FromSeconds(60);
+                s.ShutdownOnException = true;
+            }))
+    );
+```
+
+Defaults;
+
+* Interval = 5 seconds
+* BackOffOnException = 5 seconds
+* MaximumBackOff = 60 seconds
+* ShutdownOnException = false
+
 #### Issues 
 
 * The SqlServer implementation is not yet complete. It is not yet possible to configure the table name
