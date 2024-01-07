@@ -20,6 +20,7 @@ public static class MediatorOutboxConfigurationBuilderExtensions
             });
 
             services.AddTransient<IOutbox, SqlServerNotificationOutbox>();
+            services.AddTransient<IOutboxStorage, SqlServerOutboxStorage>();
         });
 
         return builder;
