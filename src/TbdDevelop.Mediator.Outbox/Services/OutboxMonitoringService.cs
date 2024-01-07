@@ -28,12 +28,14 @@ public class OutboxMonitoringService(
                 {
                     var message = await storage.RetrieveNextMessage(stoppingToken);
 
-                    if (message is null)
+                    if (message is not null)
+                    {
+                        await PublishMessage(message, stoppingToken);
+
+                        await storage.Commit(message, stoppingToken);
+                        
                         continue;
-
-                    await PublishMessage(message, stoppingToken);
-
-                    await storage.Commit(message, stoppingToken);
+                    }
 
                     delayTime = configuration.Interval;
                 }
