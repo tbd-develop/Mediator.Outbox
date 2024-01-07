@@ -1,5 +1,7 @@
 ## Mediator Outbox 
 
+[![Release to Nuget](https://github.com/tbd-develop/Mediator.Outbox/actions/workflows/release.yml/badge.svg)](https://github.com/tbd-develop/Mediator.Outbox/actions/workflows/release.yml)
+
 The outbox pattern is a useful pattern for resilience in your messaging. This implementation based on the Mediator
 library is intended to place INotification messages produced in the application into a queue for later processing.
 
