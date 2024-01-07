@@ -2,22 +2,23 @@
 using Mediator;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using TbdDevelop.Mediator.Outbox.Contracts;
+using TbdDevelop.Mediator.Outbox.Extensions.Configuration;
 
 namespace TbdDevelop.Mediator.Outbox.Services;
 
 public class OutboxMonitoringService(
     IOutboxStorage storage,
     ILogger<OutboxMonitoringService> logger,
-    IPublisher publisher) : BackgroundService
+    IPublisher publisher,
+    IOptions<OutboxMonitoringConfiguration> options) : BackgroundService
 {
-    private const int DefaultDelayTimeMs = 25;
-    private const int BackoffIntervalMs = 1000;
-    private const int MaxBackOffIntervalMs = 10000;
-
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var delayTimeMs = DefaultDelayTimeMs;
+        var configuration = options.Value;
+
+        var delayTime = configuration.Interval;
 
         return Task.Factory.StartNew(async () =>
         {
@@ -34,20 +35,31 @@ public class OutboxMonitoringService(
 
                     await storage.Commit(message, stoppingToken);
 
-                    delayTimeMs = DefaultDelayTimeMs;
+                    delayTime = configuration.Interval;
                 }
                 catch (Exception exception)
                 {
-                    if (delayTimeMs < MaxBackOffIntervalMs)
+                    if (!configuration.ShutdownOnException)
                     {
-                        delayTimeMs += BackoffIntervalMs;
-                    }
+                        if (delayTime < configuration.MaximumBackOff)
+                        {
+                            delayTime += configuration.BackOffOnException;
+                        }
 
-                    logger.LogError(exception, "Error while publishing message. Backing off for {BackoffIntervalMs}ms",
-                        BackoffIntervalMs);
+                        logger.LogError(exception,
+                            "Error while publishing message. Backing off for {BackoffIntervalMs}ms",
+                            delayTime);
+                    }
+                    else
+                    {
+                        logger.LogError(exception,
+                            "Error while publishing message. Shutting down service");
+
+                        throw;
+                    }
                 }
 
-                await Task.Delay(delayTimeMs, stoppingToken);
+                await Task.Delay(delayTime, stoppingToken);
             } while (!stoppingToken.IsCancellationRequested);
         }, TaskCreationOptions.LongRunning | TaskCreationOptions.AttachedToParent);
     }
