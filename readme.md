@@ -46,6 +46,15 @@ ServiceCollection.AddMediatorOutbox(configure =>
     );
 ```
 
+Once you have the application built, to make sure the table exists when starting up, you now need to call `ConfigureSqlOutbox`. eg.
+
+```csharp
+var app = builder.Build();
+
+app.ConfigureSqlOutbox();
+```
+
+This will run the necessary migration to create the table in the database specified with your "domain.outbox" connection.
 
 #### Processing Configuration
 
@@ -75,4 +84,3 @@ Defaults;
 #### Issues 
 
 * The SqlServer implementation is not yet complete. It is not yet possible to configure the table name
-* There is no user tracking, so the user responsible for the events is lost if it's not part of your event.

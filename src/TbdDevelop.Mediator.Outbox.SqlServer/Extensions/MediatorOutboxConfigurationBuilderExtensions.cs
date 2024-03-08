@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using TbdDevelop.Mediator.Outbox.Contracts;
 using TbdDevelop.Mediator.Outbox.Extensions.Configuration;
 using TbdDevelop.Mediator.Outbox.SqlServer.Context;
@@ -24,5 +25,16 @@ public static class MediatorOutboxConfigurationBuilderExtensions
         });
 
         return builder;
+    }
+
+    public static IHost ConfigureSqlOutbox(this IHost host)
+    {
+        var factory = host.Services.GetRequiredService<IDbContextFactory<OutboxDbContext>>();
+
+        using var context = factory.CreateDbContext();
+        
+        context.Database.Migrate();
+
+        return host;
     }
 }

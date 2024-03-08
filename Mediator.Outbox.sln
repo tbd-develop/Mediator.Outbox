@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{831B8BE5-2
 		readme.md = readme.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TbdDevelop.Mediator.Outbox.SqlServer.Tests", "tests\TbdDevelop.Mediator.Outbox.SqlServer.Tests\TbdDevelop.Mediator.Outbox.SqlServer.Tests.csproj", "{F73C7954-4CEA-4CF2-B357-D6A0454A4D76}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,8 +38,13 @@ Global
 		{47A778CF-572B-4425-B358-E829BABA8CE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47A778CF-572B-4425-B358-E829BABA8CE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47A778CF-572B-4425-B358-E829BABA8CE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F73C7954-4CEA-4CF2-B357-D6A0454A4D76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F73C7954-4CEA-4CF2-B357-D6A0454A4D76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F73C7954-4CEA-4CF2-B357-D6A0454A4D76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F73C7954-4CEA-4CF2-B357-D6A0454A4D76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{47A778CF-572B-4425-B358-E829BABA8CE2} = {7AC361CA-CF8A-4C5C-A197-0C9D4CE3D1A0}
+		{F73C7954-4CEA-4CF2-B357-D6A0454A4D76} = {7AC361CA-CF8A-4C5C-A197-0C9D4CE3D1A0}
 	EndGlobalSection
 EndGlobal
