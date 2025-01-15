@@ -35,4 +35,20 @@ public class InMemoryOutboxStorage : IOutboxStorage, IOutbox
     {
         return Task.Run(() => { _outbox.TryRemove((Guid)message.Id, out _); }, cancellationToken);
     }
+
+    public Task IncreaseRetryCount(IOutboxMessage message, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            if (!_outbox.TryGetValue((Guid)message.Id, out var outboxMessage))
+            {
+                return;
+            }
+            
+            if (outboxMessage is DefaultOutboxMessage messageToRetry)
+            {
+                messageToRetry.Retries++;
+            }
+        }, cancellationToken);
+    }
 }

@@ -43,8 +43,6 @@ public class MediatorOutboxConfigurationBuilder
 
         if (configure is null)
         {
-            // Configure default options 
-
             _services.Configure<OutboxMonitoringConfiguration>(_ => { });
 
             return this;

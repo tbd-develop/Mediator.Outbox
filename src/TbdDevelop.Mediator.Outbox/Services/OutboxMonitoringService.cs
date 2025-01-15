@@ -24,22 +24,9 @@ public class OutboxMonitoringService(
         {
             do
             {
-                try
-                {
-                    var message = await storage.RetrieveNextMessage(stoppingToken);
+                var message = await storage.RetrieveNextMessage(stoppingToken);
 
-                    if (message is not null)
-                    {
-                        await PublishMessage(message, stoppingToken);
-
-                        await storage.Commit(message, stoppingToken);
-                        
-                        continue;
-                    }
-
-                    delayTime = configuration.Interval;
-                }
-                catch (Exception exception)
+                if (message is not null && !await TryPublishMessage(message, stoppingToken))
                 {
                     if (!configuration.ShutdownOnException)
                     {
@@ -48,22 +35,40 @@ public class OutboxMonitoringService(
                             delayTime += configuration.BackOffOnException;
                         }
 
-                        logger.LogError(exception,
-                            "Error while publishing message. Backing off for {BackoffIntervalMs}ms",
+                        await storage.IncreaseRetryCount(message, stoppingToken);
+
+                        logger.LogError("Error while publishing message. Backing off for {BackoffIntervalMs}ms",
                             delayTime);
                     }
                     else
                     {
-                        logger.LogError(exception,
-                            "Error while publishing message. Shutting down service");
+                        logger.LogError("Error while publishing message. Shutting down service");
 
-                        throw;
+                        break;
                     }
                 }
 
                 await Task.Delay(delayTime, stoppingToken);
             } while (!stoppingToken.IsCancellationRequested);
         }, TaskCreationOptions.LongRunning | TaskCreationOptions.AttachedToParent);
+    }
+
+    private async Task<bool> TryPublishMessage(IOutboxMessage message, CancellationToken stoppingToken)
+    {
+        try
+        {
+            await PublishMessage(message, stoppingToken);
+
+            await storage.Commit(message, stoppingToken);
+
+            return true;
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Error while publishing message {messageId}", message?.Id);
+        }
+
+        return false;
     }
 
     private async Task PublishMessage(IOutboxMessage message, CancellationToken cancellationToken)

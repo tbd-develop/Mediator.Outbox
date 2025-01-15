@@ -20,7 +20,8 @@ public class SqlServerOutboxStorage(IDbContextFactory<OutboxDbContext> factory) 
 
         var message = await context.OutboxMessages
             .Where(m => m.DateProcessed == null)
-            .OrderBy(m => m.DateAdded)
+            .OrderBy(m => m.Retries)
+            .ThenBy(m => m.DateAdded)
             .FirstOrDefaultAsync(cancellationToken);
 
         return message is null ? null : BuildOutboxMessage(message);
@@ -55,6 +56,23 @@ public class SqlServerOutboxStorage(IDbContextFactory<OutboxDbContext> factory) 
         }
 
         outboxMessage.DateProcessed = DateTime.UtcNow;
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task IncreaseRetryCount(IOutboxMessage message, CancellationToken cancellationToken = default)
+    {
+        await using var context = await factory.CreateDbContextAsync(cancellationToken);
+
+        var outboxMessage =
+            await context.OutboxMessages.SingleOrDefaultAsync(m => m.Id == (int)message.Id, cancellationToken);
+
+        if (outboxMessage is null)
+        {
+            return;
+        }
+
+        outboxMessage.Retries += 1;
 
         await context.SaveChangesAsync(cancellationToken);
     }
