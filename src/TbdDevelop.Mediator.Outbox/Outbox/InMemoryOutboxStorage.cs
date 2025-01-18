@@ -8,6 +8,8 @@ public class InMemoryOutboxStorage : IOutboxStorage, IOutbox
 {
     private readonly ConcurrentDictionary<Guid, IOutboxMessage> _outbox = new();
 
+    private readonly ConcurrentDictionary<Guid, IOutboxMessage> _deadLetterQueue = new();
+
     public async ValueTask Add<TNotification>(TNotification notification,
         CancellationToken cancellationToken = new()) where TNotification : INotification
     {
@@ -44,7 +46,7 @@ public class InMemoryOutboxStorage : IOutboxStorage, IOutbox
             {
                 return;
             }
-            
+
             if (outboxMessage is DefaultOutboxMessage messageToRetry)
             {
                 messageToRetry.Retries++;
@@ -54,6 +56,12 @@ public class InMemoryOutboxStorage : IOutboxStorage, IOutbox
 
     public Task MoveToDeadLetterQueue(IOutboxMessage message, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return Task.Run(() =>
+        {
+            if (_outbox.TryRemove((Guid)message.Id, out var outboxMessage))
+            {
+                _deadLetterQueue.TryAdd((Guid)message.Id, outboxMessage);
+            }
+        }, cancellationToken);
     }
 }
