@@ -1,14 +1,15 @@
 ﻿using Mediator;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using NSubstitute;
-using TbdDevelop.Mediator.Outbox.Contracts;
+using TbdDevelop.Mediator.Outbox.Infrastructure;
 using Xunit;
 
 namespace TbdDevelop.Mediator.Outbox.Tests;
 
 public class when_publishing_an_object_that_is_not_a_notification
 {
-    private IOutbox Outbox = null!;
-    private OutboxPublisher OutboxPublisher = null!;
+    private IOutbox _outbox = null!;
+    private OutboxPublisher _subject = null!;
 
     public when_publishing_an_object_that_is_not_a_notification()
     {
@@ -20,20 +21,20 @@ public class when_publishing_an_object_that_is_not_a_notification
     [Fact]
     public void notification_is_not_added_to_outbox()
     {
-        Outbox
+        _outbox
             .DidNotReceive()
             .Add(Arg.Any<INotification>(), Arg.Any<CancellationToken>());
     }
 
     private void Arrange()
     {
-        Outbox = Substitute.For<IOutbox>();
+        _outbox = Substitute.For<IOutbox>();
 
-        OutboxPublisher = new OutboxPublisher(Outbox);
+        _subject = new OutboxPublisher(_outbox);
     }
 
     private void Act()
     {
-        OutboxPublisher.Publish(new { Name = "Invalid Notification" });
+        _subject.Publish(new { Name = "Invalid Notification" });
     }
 }
