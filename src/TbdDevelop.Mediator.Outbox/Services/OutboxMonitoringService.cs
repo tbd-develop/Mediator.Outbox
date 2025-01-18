@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Mediator;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -11,46 +10,63 @@ namespace TbdDevelop.Mediator.Outbox.Services;
 public class OutboxMonitoringService(
     IOutboxStorage storage,
     ILogger<OutboxMonitoringService> logger,
-    IPublisher publisher,
+    IOutboxProcessingPublisher processingPublisher,
     IOptions<OutboxMonitoringConfiguration> options) : BackgroundService
 {
+    private readonly Lazy<OutboxMonitoringConfiguration> _configuration = new(() => options.Value);
+
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var configuration = options.Value;
-
-        var delayTime = configuration.Interval;
-
         return Task.Factory.StartNew(async () =>
         {
             do
             {
-                var message = await storage.RetrieveNextMessage(stoppingToken);
-
-                if (message is not null && !await TryPublishMessage(message, stoppingToken))
+                if (await ProcessNextOutboxQueueMessage(stoppingToken) != QueueStatus.Continue)
                 {
-                    if (!configuration.ShutdownOnException)
-                    {
-                        if (delayTime < configuration.MaximumBackOff)
-                        {
-                            delayTime += configuration.BackOffOnException;
-                        }
+                    logger.LogError("Error while publishing message. Shutting down service");
 
-                        await storage.IncreaseRetryCount(message, stoppingToken);
-
-                        logger.LogError("Error while publishing message. Backing off for {BackoffIntervalMs}ms",
-                            delayTime);
-                    }
-                    else
-                    {
-                        logger.LogError("Error while publishing message. Shutting down service");
-
-                        break;
-                    }
+                    break;
                 }
 
-                await Task.Delay(delayTime, stoppingToken);
+                await Task.Delay(_configuration.Value.Interval, stoppingToken);
             } while (!stoppingToken.IsCancellationRequested);
         }, TaskCreationOptions.LongRunning | TaskCreationOptions.AttachedToParent);
+    }
+
+    private async Task<QueueStatus> ProcessNextOutboxQueueMessage(CancellationToken cancellationToken)
+    {
+        var message = await storage.RetrieveNextMessage(cancellationToken);
+
+        if (message is null || await TryPublishMessage(message, cancellationToken))
+        {
+            return QueueStatus.Continue;
+        }
+
+        return await HandleMessageFailure(message, cancellationToken);
+    }
+
+    private async Task<QueueStatus> HandleMessageFailure(IOutboxMessage message, CancellationToken cancellationToken)
+    {
+        if (_configuration.Value.ShutdownOnException)
+        {
+            return QueueStatus.Shutdown;
+        }
+
+        if (ShouldRetryMessage(message))
+        {
+            await storage.IncreaseRetryCount(message, cancellationToken);
+        }
+        else
+        {
+            await storage.MoveToDeadLetterQueue(message, cancellationToken);
+        }
+
+        return QueueStatus.Continue;
+    }
+
+    private bool ShouldRetryMessage(IOutboxMessage message)
+    {
+        return message.Retries < _configuration.Value.MaximumRetryCount;
     }
 
     private async Task<bool> TryPublishMessage(IOutboxMessage message, CancellationToken stoppingToken)
@@ -86,12 +102,12 @@ public class OutboxMonitoringService(
 
         var genericMethod = method.MakeGenericMethod(type);
 
-        await (Task)genericMethod.Invoke(this, new[] { message.Event, cancellationToken })!;
+        await (Task)genericMethod.Invoke(this, [message.Event, cancellationToken])!;
     }
 
     private async Task PublishEvent<TEvent>(TEvent @event, CancellationToken cancellationToken)
-        where TEvent : class, INotification
+        where TEvent : class
     {
-        await publisher.Publish(@event, cancellationToken);
+        await processingPublisher.Publish(@event, cancellationToken);
     }
 }

@@ -51,4 +51,9 @@ public class InMemoryOutboxStorage : IOutboxStorage, IOutbox
             }
         }, cancellationToken);
     }
+
+    public Task MoveToDeadLetterQueue(IOutboxMessage message, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

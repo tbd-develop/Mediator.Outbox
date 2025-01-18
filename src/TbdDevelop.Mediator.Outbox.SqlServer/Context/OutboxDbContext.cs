@@ -7,9 +7,11 @@ public class OutboxDbContext(DbContextOptions<OutboxDbContext> options)
     : DbContext(options)
 {
     public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!;
+    public DbSet<DeadLetterMessage> DeadLetterMessages { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OutboxDbContext).Assembly);
+        modelBuilder
+            .ApplyConfigurationsFromAssembly(typeof(OutboxDbContext).Assembly);
     }
 }

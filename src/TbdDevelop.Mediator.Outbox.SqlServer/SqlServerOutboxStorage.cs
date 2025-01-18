@@ -40,7 +40,7 @@ public class SqlServerOutboxStorage(IDbContextFactory<OutboxDbContext> factory) 
 
         return (IOutboxMessage)Activator.CreateInstance(
             typeof(SqlOutboxMessage<>).MakeGenericType(type),
-            message.Id, message.DateAdded, content)!;
+            message.Id, message.Retries, message.DateAdded, content)!;
     }
 
     public async Task Commit(IOutboxMessage message, CancellationToken cancellationToken = default)
@@ -65,7 +65,8 @@ public class SqlServerOutboxStorage(IDbContextFactory<OutboxDbContext> factory) 
         await using var context = await factory.CreateDbContextAsync(cancellationToken);
 
         var outboxMessage =
-            await context.OutboxMessages.SingleOrDefaultAsync(m => m.Id == (int)message.Id, cancellationToken);
+            await context.OutboxMessages
+                .SingleOrDefaultAsync(m => m.Id == (int)message.Id, cancellationToken);
 
         if (outboxMessage is null)
         {
@@ -73,6 +74,30 @@ public class SqlServerOutboxStorage(IDbContextFactory<OutboxDbContext> factory) 
         }
 
         outboxMessage.Retries += 1;
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task MoveToDeadLetterQueue(IOutboxMessage message, CancellationToken cancellationToken = default)
+    {
+        await using var context = await factory.CreateDbContextAsync(cancellationToken);
+
+        var outboxMessage =
+            await context.OutboxMessages.SingleOrDefaultAsync(m => m.Id == (int)message.Id, cancellationToken);
+
+        if (outboxMessage is null)
+        {
+            return;
+        }
+
+        context.DeadLetterMessages.Add(new DeadLetterMessage
+        {
+            Type = outboxMessage.Type,
+            Content = outboxMessage.Content,
+            DateAdded = outboxMessage.DateAdded
+        });
+
+        context.OutboxMessages.Remove(outboxMessage);
 
         await context.SaveChangesAsync(cancellationToken);
     }

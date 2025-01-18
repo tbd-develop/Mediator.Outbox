@@ -32,7 +32,7 @@ public static class MediatorOutboxConfigurationBuilderExtensions
         var factory = host.Services.GetRequiredService<IDbContextFactory<OutboxDbContext>>();
 
         using var context = factory.CreateDbContext();
-        
+
         context.Database.Migrate();
 
         return host;

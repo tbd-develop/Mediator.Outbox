@@ -6,6 +6,7 @@ public interface IOutboxMessage
 {
     object Id { get; }
     object Event { get; }
+    int Retries { get; }
 
     DateTime DateAdded { get; }
 }
