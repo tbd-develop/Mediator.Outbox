@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
-using TbdDevelop.Mediator.Outbox.Contracts;
+using TbdDevelop.Mediator.Outbox.Infrastructure;
 using TbdDevelop.Mediator.Outbox.SqlServer.Context;
 using TbdDevelop.Mediator.Outbox.SqlServer.Models;
 

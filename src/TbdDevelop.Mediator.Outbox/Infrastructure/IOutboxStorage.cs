@@ -1,4 +1,4 @@
-﻿namespace TbdDevelop.Mediator.Outbox.Contracts;
+﻿namespace TbdDevelop.Mediator.Outbox.Infrastructure;
 
 public interface IOutboxStorage
 {

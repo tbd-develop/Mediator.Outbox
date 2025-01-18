@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using TbdDevelop.Mediator.Outbox.Contracts;
+using TbdDevelop.Mediator.Outbox.Infrastructure;
 
 namespace TbdDevelop.Mediator.Outbox.Extensions.Configuration;
 

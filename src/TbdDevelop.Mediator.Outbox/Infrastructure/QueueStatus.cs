@@ -1,4 +1,4 @@
-namespace TbdDevelop.Mediator.Outbox.Services;
+namespace TbdDevelop.Mediator.Outbox.Infrastructure;
 
 public enum QueueStatus
 {

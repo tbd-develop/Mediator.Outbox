@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TbdDevelop.Mediator.Outbox.Contracts;
 using TbdDevelop.Mediator.Outbox.Extensions.Configuration;
+using TbdDevelop.Mediator.Outbox.Infrastructure;
 using TbdDevelop.Mediator.Outbox.Outbox;
 
 namespace TbdDevelop.Mediator.Outbox.Extensions;
