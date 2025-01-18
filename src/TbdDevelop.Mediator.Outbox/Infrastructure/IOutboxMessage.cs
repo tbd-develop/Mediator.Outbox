@@ -1,11 +1,12 @@
 ﻿using Mediator;
 
-namespace TbdDevelop.Mediator.Outbox.Contracts;
+namespace TbdDevelop.Mediator.Outbox.Infrastructure;
 
 public interface IOutboxMessage
 {
     object Id { get; }
     object Event { get; }
+    int Retries { get; }
 
     DateTime DateAdded { get; }
 }

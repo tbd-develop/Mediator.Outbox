@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TbdDevelop.Mediator.Outbox.SqlServer.Context;
 
@@ -11,9 +12,11 @@ using TbdDevelop.Mediator.Outbox.SqlServer.Context;
 namespace TbdDevelop.Mediator.Outbox.SqlServer.Migrations
 {
     [DbContext(typeof(OutboxDbContext))]
-    partial class OutboxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250115131404_add_retries_to_outbox")]
+    partial class add_retries_to_outbox
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,32 +24,6 @@ namespace TbdDevelop.Mediator.Outbox.SqlServer.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("TbdDevelop.Mediator.Outbox.SqlServer.Models.DeadLetterMessage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateAdded")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getutcdate()");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NotificationOutbox.DeadLetterQueue", (string)null);
-                });
 
             modelBuilder.Entity("TbdDevelop.Mediator.Outbox.SqlServer.Models.OutboxMessage", b =>
                 {

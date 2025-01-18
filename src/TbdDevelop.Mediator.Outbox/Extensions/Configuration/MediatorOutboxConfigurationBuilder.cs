@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TbdDevelop.Mediator.Outbox.Contracts;
+using TbdDevelop.Mediator.Outbox.Infrastructure;
 using TbdDevelop.Mediator.Outbox.Outbox;
 using TbdDevelop.Mediator.Outbox.Services;
 
@@ -43,8 +43,6 @@ public class MediatorOutboxConfigurationBuilder
 
         if (configure is null)
         {
-            // Configure default options 
-
             _services.Configure<OutboxMonitoringConfiguration>(_ => { });
 
             return this;
