@@ -50,10 +50,10 @@ public class WhenNotificationIsPublished_AndExceptionIsRaised(
             await using var context = await factory.CreateDbContextAsync(CancellationToken.None);
 
             var updatedMessages = await context.OutboxMessages.ToListAsync(CancellationToken.None);
-            
-            // Assert.Single(updatedMessages);
-            //
-            // Assert.Equal(1, updatedMessages[0].Retries);
+
+            Assert.Single(updatedMessages);
+
+            Assert.Equal(1, updatedMessages[0].Retries);
         }
     }
 }
