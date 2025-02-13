@@ -41,6 +41,8 @@ public class MediatorOutboxConfigurationBuilder
     {
         _services.AddHostedService<OutboxMonitoringService>();
 
+        _services.AddTransient<IQueueProcessor, OutboxMessageProcessor>();
+
         if (configure is null)
         {
             _services.Configure<OutboxMonitoringConfiguration>(_ => { });

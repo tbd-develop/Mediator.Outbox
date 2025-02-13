@@ -1,6 +1,4 @@
-﻿using TbdDevelop.Mediator.Outbox.Services;
-
-namespace TbdDevelop.Mediator.Outbox.Infrastructure;
+﻿namespace TbdDevelop.Mediator.Outbox.Infrastructure;
 
 public interface IQueueProcessor
 {
