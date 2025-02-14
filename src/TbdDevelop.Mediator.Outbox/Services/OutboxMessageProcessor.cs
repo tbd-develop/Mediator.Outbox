@@ -73,7 +73,7 @@ public class OutboxMessageProcessor(
         var type = message.Event.GetType();
 
         var method =
-            typeof(OutboxMonitoringService).GetMethod(nameof(PublishEvent),
+            typeof(OutboxMessageProcessor).GetMethod(nameof(PublishEvent),
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
         if (method is null)
