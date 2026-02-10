@@ -12,6 +12,7 @@ public class OutboxDbContext(DbContextOptions<OutboxDbContext> options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
+            .HasDefaultSchema("outbox")
             .ApplyConfigurationsFromAssembly(typeof(OutboxDbContext).Assembly);
     }
 }

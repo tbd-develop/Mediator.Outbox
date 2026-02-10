@@ -1,5 +1,6 @@
 ﻿using Mediator;
 using TbdDevelop.Mediator.Outbox.Infrastructure;
+using INotificationPublisher = TbdDevelop.Mediator.Outbox.Infrastructure.INotificationPublisher;
 
 namespace TbdDevelop.Mediator.Outbox;
 
