@@ -9,7 +9,7 @@ namespace TbdDevelop.Mediator.Outbox.Postgres.Extensions;
 
 public static class MediatorOutboxConfigurationBuilderExtensions
 {
-    public static MediatorOutboxConfigurationBuilder UseNpgSql(this MediatorOutboxConfigurationBuilder builder,
+    public static MediatorOutboxConfigurationBuilder UseNpgSqlOutbox(this MediatorOutboxConfigurationBuilder builder,
         string? connectionString)
     {
         builder.Register(services =>

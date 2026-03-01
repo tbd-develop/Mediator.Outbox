@@ -12,7 +12,7 @@ using TbdDevelop.Mediator.Outbox.Postgres.Context;
 namespace TbdDevelop.Mediator.Outbox.Postgres.Migrations
 {
     [DbContext(typeof(OutboxDbContext))]
-    [Migration("20260228174001_Initial")]
+    [Migration("20260301000126_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -41,7 +41,7 @@ namespace TbdDevelop.Mediator.Outbox.Postgres.Migrations
                     b.Property<DateTime>("DateAdded")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("current_timestamp");
+                        .HasDefaultValueSql("TIMEZONE('utc', NOW())");
 
                     b.Property<string>("Type")
                         .IsRequired()

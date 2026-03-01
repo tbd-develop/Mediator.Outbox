@@ -38,7 +38,7 @@ namespace TbdDevelop.Mediator.Outbox.Postgres.Migrations
                     b.Property<DateTime>("DateAdded")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("current_timestamp");
+                        .HasDefaultValueSql("TIMEZONE('utc', NOW())");
 
                     b.Property<string>("Type")
                         .IsRequired()

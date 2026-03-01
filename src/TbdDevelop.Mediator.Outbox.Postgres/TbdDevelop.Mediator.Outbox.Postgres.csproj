@@ -19,4 +19,8 @@
       <ProjectReference Include="..\TbdDevelop.Mediator.Outbox\TbdDevelop.Mediator.Outbox.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
 </Project>

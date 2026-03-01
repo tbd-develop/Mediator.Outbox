@@ -13,6 +13,6 @@ public class DeadLetterMessageTypeConfiguration : IEntityTypeConfiguration<DeadL
         builder.HasKey(k => k.Id);
 
         builder.Property(p => p.DateAdded)
-            .HasDefaultValueSql("current_timestamp");
+            .HasDefaultValueSql("TIMEZONE('utc', NOW())");
     }
 }
