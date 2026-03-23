@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -8,7 +9,7 @@ using TbdDevelop.Mediator.Outbox.Infrastructure;
 namespace TbdDevelop.Mediator.Outbox.Services;
 
 public class OutboxMonitoringService(
-    IQueueProcessor processor,
+    IServiceScopeFactory scopeFactory,
     ILogger<OutboxMonitoringService> logger,
     IOptions<OutboxMonitoringConfiguration> options
 ) : BackgroundService
@@ -21,6 +22,9 @@ public class OutboxMonitoringService(
         {
             do
             {
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var processor = scope.ServiceProvider.GetRequiredService<IQueueProcessor>();
+
                 if (await processor.ProcessNextOutboxQueueMessage(stoppingToken) != QueueStatus.Continue)
                 {
                     logger.LogError("Error while publishing message. Shutting down service");
