@@ -13,7 +13,7 @@ public class MediatorOutboxConfigurationBuilder
     {
         _services = services;
 
-        services.AddTransient<INotificationPublisher, OutboxPublisher>();
+        services.AddScoped<INotificationPublisher, OutboxPublisher>();
     }
 
     /// <summary>
@@ -22,7 +22,7 @@ public class MediatorOutboxConfigurationBuilder
     /// <returns></returns>
     public MediatorOutboxConfigurationBuilder UseInMemoryOutbox()
     {
-        _services.AddTransient<IOutbox, InMemoryOutboxStorage>();
+        _services.AddScoped<IOutbox, InMemoryOutboxStorage>();
 
         return this;
     }

@@ -20,8 +20,8 @@ public static class MediatorOutboxConfigurationBuilderExtensions
                     .UseNpgsql(connectionString);
             });
 
-            services.AddTransient<IOutbox, PostgresNotificationOutbox>();
-            services.AddTransient<IOutboxStorage, PostgresOutboxStorage>();
+            services.AddScoped<IOutbox, PostgresNotificationOutbox>();
+            services.AddScoped<IOutboxStorage, PostgresOutboxStorage>();
         });
 
         return builder;
