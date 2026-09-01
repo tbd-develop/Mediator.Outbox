@@ -8,7 +8,7 @@ public class OutboxMonitoringConfigurationBuilder(IServiceCollection services)
     public OutboxMonitoringConfigurationBuilder WithPublisher<TPublisher>()
         where TPublisher : class, IOutboxProcessingPublisher
     {
-        services.AddSingleton<IOutboxProcessingPublisher, TPublisher>();
+        services.AddScoped<IOutboxProcessingPublisher, TPublisher>();
 
         return this;
     }

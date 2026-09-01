@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
 
         if (services.All(s => s.ServiceType != typeof(IOutboxProcessingPublisher)))
         {
-            services.AddSingleton<IOutboxProcessingPublisher, DefaultOutboxProcessingPublisher>();
+            services.AddScoped<IOutboxProcessingPublisher, DefaultOutboxProcessingPublisher>();
         }
 
         return services;
