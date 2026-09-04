@@ -20,7 +20,7 @@ public class OutboxContextFixture : IAsyncLifetime
 
     public OutboxContextFixture()
     {
-        _sqlContainer = new PostgreSqlBuilder("postgres:17-alpine")
+        _sqlContainer = new PostgreSqlBuilder("postgres:17")
             .WithEnvironment("ACCEPT_EULA", "Y")
             .WithPassword("Password1234!")
             .WithDockerEndpoint("npipe://./pipe/docker_engine")

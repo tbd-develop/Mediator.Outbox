@@ -10,6 +10,18 @@ library is intended to place INotification messages produced in the application 
 In your code, where you would normally use IPublisher, or IMediator with Publish, you would instead replace this with 
 INotificationPublisher. This is a new interface is functionally compatible with IPublisher interface for Publish.
 
+#### Service Lifetime
+
+Default Scope is Transient, if you want to change to Scoped;
+
+```csharp
+ServiceCollection.AddMediatorOutbox(configure => 
+    {
+        configure.ServiceLifetime = ServiceLifetime.Scoped;
+        configure.UseInMemoryOutbox();
+    });
+```
+
 #### In Memory Outbox, no processing
 
 This is pretty much a useless implementation, as nothing will be done with messages and they exist only in your application.

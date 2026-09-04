@@ -3,12 +3,12 @@ using TbdDevelop.Mediator.Outbox.Infrastructure;
 
 namespace TbdDevelop.Mediator.Outbox.Extensions.Configuration;
 
-public class OutboxMonitoringConfigurationBuilder(IServiceCollection services)
+public class OutboxMonitoringConfigurationBuilder(IMediatorServiceCollection services)
 {
     public OutboxMonitoringConfigurationBuilder WithPublisher<TPublisher>()
         where TPublisher : class, IOutboxProcessingPublisher
     {
-        services.AddScoped<IOutboxProcessingPublisher, TPublisher>();
+        services.AddInServiceLifetime<IOutboxProcessingPublisher, TPublisher>();
 
         return this;
     }

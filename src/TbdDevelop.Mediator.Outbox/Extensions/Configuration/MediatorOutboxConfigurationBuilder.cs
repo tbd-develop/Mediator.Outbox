@@ -7,13 +7,16 @@ namespace TbdDevelop.Mediator.Outbox.Extensions.Configuration;
 
 public class MediatorOutboxConfigurationBuilder
 {
-    private readonly IServiceCollection _services;
+    public ServiceLifetime ServiceLifetime { get; set; } = ServiceLifetime.Transient;
+    private readonly IMediatorServiceCollection _services;
 
-    public MediatorOutboxConfigurationBuilder(IServiceCollection services)
+    public MediatorOutboxConfigurationBuilder(
+        IServiceCollection services
+    )
     {
-        _services = services;
+        _services = new MediatorServiceCollection(ServiceLifetime, services);
 
-        services.AddScoped<INotificationPublisher, OutboxPublisher>();
+        _services.AddInServiceLifetime<INotificationPublisher, OutboxPublisher>();
     }
 
     /// <summary>
@@ -22,7 +25,7 @@ public class MediatorOutboxConfigurationBuilder
     /// <returns></returns>
     public MediatorOutboxConfigurationBuilder UseInMemoryOutbox()
     {
-        _services.AddScoped<IOutbox, InMemoryOutboxStorage>();
+        _services.AddInServiceLifetime<IOutbox, InMemoryOutboxStorage>();
 
         return this;
     }
@@ -37,13 +40,14 @@ public class MediatorOutboxConfigurationBuilder
     /// <param name="configure">Optional override for configuring timeouts</param>
     /// <returns></returns>
     public MediatorOutboxConfigurationBuilder AddOutboxMonitoringService(
-        Action<OutboxMonitoringConfigurationBuilder>? configure = null)
+        Action<OutboxMonitoringConfigurationBuilder>? configure = null
+    )
     {
         _services.AddHostedService<OutboxMonitoringService>();
 
-        _services.AddTransient<IQueueProcessor, OutboxMessageProcessor>();
+        _services.AddInServiceLifetime<IQueueProcessor, OutboxMessageProcessor>();
 
-        if (configure is null)
+        if ( configure is null )
         {
             _services.Configure<OutboxMonitoringConfiguration>(_ => { });
 
@@ -57,7 +61,9 @@ public class MediatorOutboxConfigurationBuilder
         return this;
     }
 
-    public MediatorOutboxConfigurationBuilder Register(Action<IServiceCollection> configure)
+    public MediatorOutboxConfigurationBuilder Register(
+        Action<IMediatorServiceCollection> configure
+    )
     {
         configure(_services);
 
